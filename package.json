@@ -1,0 +1,29 @@
+{
+  "name": "verification-sdk",
+  "version": "1.0.0",
+  "description": "Verfication sdk",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "dependencies": {
+    "@decentralized-identity/ion-tools": "^1.1.4",
+    "axios": "^1.6.7",
+    "did-jwt": "^8.0.0",
+    "did-jwt-vc": "^4.0.0",
+    "did-resolver": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.10",
+    "dotenv": "^16.4.1",
+    "tsc-watch": "^6.0.4",
+    "typescript": "^5.3.3"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "tsc-watch --onSuccess 'npm start'",
+    "start": "node dist/index.js",
+    "start:js": "node src/index.mjs"
+  },
+  "author": "",
+  "license": "ISC"
+}
