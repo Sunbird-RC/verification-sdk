@@ -3,10 +3,8 @@ import {VcValidationResponse} from "./types/VcValidationResponse";
 import {DIDDocument, Extensible} from "did-resolver";
 // import {resolveDID} from "./did-utils";
 import {verify as verifyJws} from "@decentralized-identity/ion-tools";
-import {CONFIG, REVOKED_CREDENTIALS, storeRevokedCredentials} from "./config";
+import {CONFIG, OPTIONS, REVOKED_CREDENTIALS, storeRevokedCredentials} from "./config";
 import axios, {AxiosResponse} from "axios";
-
-
 
 export const resolveDID = async (issuer: Extensible): Promise<DIDDocument> => {
     try {
@@ -17,7 +15,6 @@ export const resolveDID = async (issuer: Extensible): Promise<DIDDocument> => {
         return null;
     }
 }
-
 
 export const getRevokedCredentialsList = async (fetchAgain?: boolean) => {
     if (REVOKED_CREDENTIALS.length > 0 && !fetchAgain) {
@@ -33,6 +30,13 @@ export const getRevokedCredentialsList = async (fetchAgain?: boolean) => {
 
 const verifyVcSign = async (credToVerify: Verifiable<W3CCredential>): Promise<VcValidationResponse> => {
     let validationResponse: VcValidationResponse = {isValid: false, message: "OK"};
+    if (OPTIONS.validIssuers?.length > 0) {
+        const isValidIssuer = OPTIONS.validIssuers.filter(issuer => issuer === `${credToVerify.issuer}`).length === 1;
+        if (!isValidIssuer) {
+            validationResponse.message = "Invalid issuer";
+            return validationResponse;
+        }
+    }
     // calling identity service to verify the issuer DID
     const issuerDID: DIDDocument = await resolveDID(credToVerify.issuer);
     if (issuerDID === null) {
@@ -44,6 +48,7 @@ const verifyVcSign = async (credToVerify: Verifiable<W3CCredential>): Promise<Vc
         jws: credToVerify?.proof?.proofValue,
         publicJwk: issuerDID.verificationMethod[0].publicKeyJwk,
     });
+    validationResponse.message = validationResponse.isValid ? "OK" : "Invalid VC Signature";
     return validationResponse;
 }
 

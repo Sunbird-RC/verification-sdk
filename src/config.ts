@@ -16,7 +16,8 @@ export let REVOKED_CREDENTIALS: Verifiable<W3CCredential>[] = [];
 
 export const saveConfigurationAndOptions = (config: VerificationConfiguration, options: VerificationOptions) => {
     CONFIG = config;
-    OPTIONS = options;
+    if (options)
+        OPTIONS = options;
 }
 
 export const storeRevokedCredentials = (revokedCredentials: Verifiable<W3CCredential>[]) => {
