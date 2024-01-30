@@ -16,6 +16,7 @@ module.exports = {
     ],
   },
   resolve: {
-    extensions: ['.ts'], // File extensions to resolve
-  }
+    extensions: ['.ts', '.js'], // File extensions to resolve
+  },
+  devtool: 'source-map'
 };
