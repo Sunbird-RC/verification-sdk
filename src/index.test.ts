@@ -3,7 +3,7 @@ import {init, verifyCredential} from './index';
 import {VerificationOptions} from "./types/VerificationOptions";
 
 
-describe('My test suite', () => {
+describe('With default options', () => {
     beforeAll(async () => {
         await init({
             identityServiceUrl: "http://localhost:3332",
@@ -30,7 +30,7 @@ describe('My test suite', () => {
     });
 });
 
-describe('My test suite', () => {
+describe('With options', () => {
     beforeAll(async () => {
         await init({
             identityServiceUrl: "http://localhost:3332",

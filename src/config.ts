@@ -14,7 +14,10 @@ export let CONFIG: VerificationConfiguration = {
 
 export let REVOKED_CREDENTIALS: Verifiable<W3CCredential>[] = [];
 
-export const saveConfigurationAndOptions = (config: VerificationConfiguration, options: VerificationOptions) => {
+export const saveConfigurationAndOptions = (config: VerificationConfiguration, options?: VerificationOptions) => {
+    if (!config || !config.credentialServiceUrl || !config.identityServiceUrl) {
+        throw new Error("Invalid config. Please make sure that credentialServiceUrl and identityServiceUrl are provided");
+    }
     CONFIG = config;
     if (options)
         OPTIONS = options;

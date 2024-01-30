@@ -1,7 +1,6 @@
 import {Verifiable, W3CCredential} from "did-jwt-vc";
 import {VcValidationResponse} from "./types/VcValidationResponse";
 import {DIDDocument, Extensible} from "did-resolver";
-// import {resolveDID} from "./did-utils";
 import {verify as verifyJws} from "@decentralized-identity/ion-tools";
 import {CONFIG, OPTIONS, REVOKED_CREDENTIALS, storeRevokedCredentials} from "./config";
 import axios, {AxiosResponse} from "axios";
