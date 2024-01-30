@@ -1,70 +1,18 @@
-import {DIDDocument, Extensible} from "did-resolver";
-import { Verifiable, W3CCredential } from 'did-jwt-vc';
-import {verify as verifyJws} from '@decentralized-identity/ion-tools';
-import axios, {AxiosResponse} from 'axios';
+import {VerificationConfiguration} from "./types/VerificationConfiguration";
+import {VerificationOptions} from "./types/VerificationOptions";
+import {verifyCredential, getRevokedCredentialsList} from "./verification-utils";
+import {saveConfigurationAndOptions} from "./config";
+import {Verifiable, W3CCredential} from "did-jwt-vc";
 
-import dotenv from 'dotenv';
-import {VcValidationResponse} from "./types/VcValidationResponse";
-dotenv.config();
-
-// exports - init, verifyCredential
-
-const resolveDID = async (issuer: Extensible): Promise<DIDDocument> => {
-    try {
-        const verificationURL = `${process.env.IDENTITY_BASE_URL}/did/resolve/${issuer}`;
-        const dIDResponse: AxiosResponse = await axios.get(verificationURL);
-        return dIDResponse.data as DIDDocument;
-    } catch (err) {
-        return null;
-    }
-}
-
-const verifyVcSign = async (credToVerify: Verifiable<W3CCredential>): Promise<VcValidationResponse> => {
-    let validationResponse: VcValidationResponse = {isValid: false, message: "OK"};
-    // calling identity service to verify the issuer DID
-    const issuerDID: DIDDocument = await resolveDID(credToVerify.issuer);
-    if (issuerDID === null) {
-        validationResponse.message = "Issuer not found!";
-        return validationResponse;
-    }
-    // verifying the jws using the issuer public key in the issuer did doc
-    validationResponse.isValid = await verifyJws({
-        jws: credToVerify?.proof?.proofValue,
-        publicJwk: issuerDID.verificationMethod[0].publicKeyJwk,
-    });
-    return validationResponse;
-}
-
-const getRevocationList = async () => {
-    //TODO: store it locally
-    const revocationListUrl = `${process.env.CREDENTIAL_BASE_URL}/credentials/revocation-list`;
-    const response: AxiosResponse = await axios.get(revocationListUrl);
-    const revocationList: any = response.data;
-    console.log('Revocation List: ', revocationList);
-    return revocationList;
-}
-
-export const verifyCredential = async (credToVerify: Verifiable<W3CCredential>): Promise<VcValidationResponse> => {
-    // verify issuer
-    // verify sign
-    let validationResponse: VcValidationResponse = await verifyVcSign(credToVerify);
-    // check for expiry
-    if (validationResponse.isValid) {
-        validationResponse.isValid = new Date(credToVerify.expirationDate).getTime() >= Date.now();
-        validationResponse.message = validationResponse.isValid ? "OK" : "VC Expired";
-    }
-    // check if the vc is revoked
-    if (validationResponse.isValid) {
-        const revocationList = await getRevocationList();
-        validationResponse.isValid = revocationList.filter(revokedCred => revokedCred.id === credToVerify.id).length === 0;
-        if (!validationResponse.isValid)
-            validationResponse.message = "VC Revoked";
-    }
-    return validationResponse;
+const init = async (config: VerificationConfiguration, options?: VerificationOptions): Promise<void> => {
+    // store configuration and options
+    saveConfigurationAndOptions(config, options);
+    // download revoked credentials list
+    await getRevokedCredentialsList();
 }
 
 let vc = {
-    "id": "did:rcw:ebe1e776-6821-4112-9108-e6e0b4e8bff",
+    "id": "did:rcw:ebe1e776-6821-4112-9108-e6e0b4e8bff3",
     "type": [
         "VerifiableCredential",
         "UniversityDegreeCredential"
@@ -76,7 +24,7 @@ let vc = {
         "proofPurpose": "assertionMethod",
         "verificationMethod": "did:upai:7be718e8-86bf-47d9-9caa-17349d74fdd7"
     },
-    "issuer": "did:upai:7be718e8-86bf-47d9-9caa-17349d74fdd",
+    "issuer": "did:upai:7be718e8-86bf-47d9-9caa-17349d74fdd7",
     "@context": [
         "https://www.w3.org/2018/credentials/v1",
         "https://www.w3.org/2018/credentials/examples/v1"
@@ -92,5 +40,14 @@ let vc = {
     }
 } as unknown as Verifiable<W3CCredential>;
 
-const response = await verifyCredential(vc);
-console.log("Validation response: ", response);
+
+await init({
+    identityServiceUrl: "http://localhost:3332",
+    credentialServiceUrl: "http://localhost:3000"
+});
+
+let response = await verifyCredential(vc);
+
+console.log("Response: ", response);
+
+export {verifyCredential};
