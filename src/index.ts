@@ -10,4 +10,4 @@ const init = async (config: VerificationConfiguration, options?: VerificationOpt
     await getRevokedCredentialsList();
 }
 
-export {verifyCredential, init};
+export {init, verifyCredential, getRevokedCredentialsList};

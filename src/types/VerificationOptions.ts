@@ -1,4 +1,5 @@
 export interface VerificationOptions {
+    validIssuers: string[],
     ignoreVcExpiry: boolean,
-    validIssuers: string[]
+    ignoreRevocationCheck: boolean
 }

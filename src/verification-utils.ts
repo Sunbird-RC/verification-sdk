@@ -51,7 +51,7 @@ const verifyVcSign = async (credToVerify: Verifiable<W3CCredential>): Promise<Vc
     return validationResponse;
 }
 
-export const verifyCredential = async (credToVerify: Verifiable<W3CCredential>): Promise<VcValidationResponse> => {
+export const verifyCredential = async (credToVerify: Verifiable<W3CCredential>, revocationList?: Verifiable<W3CCredential>[]): Promise<VcValidationResponse> => {
     // verify issuer
     // verify sign
     let validationResponse: VcValidationResponse = await verifyVcSign(credToVerify);
@@ -61,8 +61,10 @@ export const verifyCredential = async (credToVerify: Verifiable<W3CCredential>):
         validationResponse.message = validationResponse.isValid ? "OK" : "VC Expired";
     }
     // check if the vc is revoked
-    if (validationResponse.isValid) {
-        const revocationList = await getRevokedCredentialsList();
+    if (validationResponse.isValid && !OPTIONS.ignoreRevocationCheck) {
+        if (!revocationList) {
+            revocationList = await getRevokedCredentialsList();
+        }
         validationResponse.isValid = revocationList.filter(revokedCred => revokedCred.id === credToVerify.id).length === 0;
         if (!validationResponse.isValid)
             validationResponse.message = "VC Revoked";
