@@ -5,7 +5,7 @@
   "main": "./lib/index.js",
   "type": "module",
   "scripts": {
-    "test": "mocha --reporter spec test/*.spec.js"
+    "test": "mocha --require @babel/register --reporter spec test/*.spec.js "
   },
   "repository": {
     "type": "git",
@@ -30,6 +30,10 @@
     "node": ">=16"
   },
   "devDependencies": {
+    "@babel/cli": "^7.24.1",
+    "@babel/core": "^7.24.3",
+    "@babel/preset-env": "^7.24.3",
+    "@babel/register": "^7.23.7",
     "chai": "^5.1.0",
     "mocha": "^10.3.0"
   },
