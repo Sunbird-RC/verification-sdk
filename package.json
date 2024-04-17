@@ -1,6 +1,6 @@
 {
   "name": "@sunbird-rc/verification-sdk",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "An SDK to verify Sunbird generated Verifiable Credentials",
   "main": "./lib/index.js",
   "type": "module",
