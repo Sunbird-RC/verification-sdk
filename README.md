@@ -23,6 +23,6 @@ import {downloadRevocationList, verifyCredential} from "@sunbird-rc/verification
 
 const revocationList = await downloadRevocationList(issuerId, revocation_url);
 
-const verificationStatus = await verifyCredential(issuerDid, credential, revocationList);
+const verificationStatus = await verifyCredential(issuerDidDoc, credential, revocationList);
 
 ```
