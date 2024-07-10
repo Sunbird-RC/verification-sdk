@@ -31,13 +31,6 @@ const VC = {
         "VerifiableCredential",
         "InsuranceCredential"
     ],
-    "proof": {
-        "type": "Ed25519Signature2020",
-        "created": "2024-02-13T09:31:40Z",
-        "proofValue": "z3acdb2TypHyxciB5AtB7Y4WJQBUVa3r6aZ7bdF2MNGgb3vuM57nSvY1xAkLJFn4C1bZ26qyprG1mNweyrENUeNCx",
-        "proofPurpose": "assertionMethod",
-        "verificationMethod": "did:abc:d1e50903-c0ee-42b2-abdf-74f68365759f#key-0"
-    },
     "issuer": "did:abc:d1e50903-c0ee-42b2-abdf-74f68365759f",
     "@context": [
         "https://www.w3.org/2018/credentials/v1",
@@ -62,7 +55,15 @@ const VC = {
         "policyNumber": "1234567",
         "policyIssuedOn": "2023-04-20T20:48:17.684Z",
         "policyExpiresOn": "2033-04-20T20:48:17.684Z"
-    }
+    },
+    "proof": {
+        "type": "Ed25519Signature2020",
+        "created": "2024-02-13T09:31:40Z",
+        "proofValue": "z3acdb2TypHyxciB5AtB7Y4WJQBUVa3r6aZ7bdF2MNGgb3vuM57nSvY1xAkLJFn4C1bZ26qyprG1mNweyrENUeNCx",
+        "proofPurpose": "assertionMethod",
+        "verificationMethod": "did:abc:d1e50903-c0ee-42b2-abdf-74f68365759f#key-0"
+    },
+
 }
 
 // This revocationList has the VC mentioned above 
