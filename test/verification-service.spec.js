@@ -1,5 +1,5 @@
 import {expect} from 'chai';
-import {verifyCredential} from "../lib/services/verification.service.js";
+import { verifyCredential } from '../lib/index.js';
 
 const did =     {
     "@context": [
@@ -64,6 +64,75 @@ const VC = {
         "policyExpiresOn": "2033-04-20T20:48:17.684Z"
     }
 }
+
+// This revocationList has the VC mentioned above 
+const revocationList1 = [
+    {
+        "id": "did:cbse:3ed88495-5c37-49da-9b4d-a12eebefd893",
+        "tags": [
+            "tag1",
+            "tag2",
+            "tag3"
+        ],
+        "issuer": "did:web:Sreejit-K.github.io:VCTest:d105c3c4-4f7c-4c15-9525-35efd3208672",
+        "issuanceDate": "2023-02-06T11:56:27.259Z"
+    },
+    {
+        "id": "did:cbse:57f88940-5c47-412b-a311-bb48ce3fa692",
+        "tags": [
+            "tag1",
+            "tag2",
+            "tag3"
+        ],
+        "issuer": "did:web:Sreejit-K.github.io:VCTest:d105c3c4-4f7c-4c15-9525-35efd3208672",
+        "issuanceDate": "2023-02-06T11:56:27.259Z"
+    },
+    {
+        "id": "did:rcw:164f4b00-0141-40ef-b34a-5b9e1d5dfeca",
+        "tags": [
+            "tag1",
+            "tag2",
+            "tag3"
+        ],
+        "issuer": "did:abc:d1e50903-c0ee-42b2-abdf-74f68365759f",
+        "issuanceDate": "2023-02-06T11:56:27.259Z"
+    }
+];
+
+// This revocationList doesnt include the VC mentioned above 
+const revocationList2 = [
+    {
+        "id": "did:cbse:3ed88495-5c37-49da-9b4d-a12eebefd893",
+        "tags": [
+            "tag1",
+            "tag2",
+            "tag3"
+        ],
+        "issuer": "did:web:Sreejit-K.github.io:VCTest:d105c3c4-4f7c-4c15-9525-35efd3208672",
+        "issuanceDate": "2023-02-06T11:56:27.259Z"
+    },
+    {
+        "id": "did:cbse:57f88940-5c47-412b-a311-bb48ce3fa692",
+        "tags": [
+            "tag1",
+            "tag2",
+            "tag3"
+        ],
+        "issuer": "did:web:Sreejit-K.github.io:VCTest:d105c3c4-4f7c-4c15-9525-35efd3208672",
+        "issuanceDate": "2023-02-06T11:56:27.259Z"
+    },
+    {
+        "id": "did:cbse:70ec2703-5e37-4390-8a20-3b1b2bb06888",
+        "tags": [
+            "tag1",
+            "tag2",
+            "tag3"
+        ],
+        "issuer": "did:hcm:da70f38a-fcb7-4ad2-9861-fa898d778bb8",
+        "issuanceDate": "2023-02-06T11:56:27.259Z"
+    }
+]
+
 describe("Hello World", ()=>{
     it("Hello World", () => {
         console.log("Hello World")
@@ -71,9 +140,33 @@ describe("Hello World", ()=>{
     });
 });
 
-describe("Test cases for Verification Service",()=>{
+describe("Test cases for VC with no revocation list",()=>{
     it("Check if a valid verifiable credential is verified", async ()=>{
         const vcStatus = await verifyCredential(did, VC)
-        expect(vcStatus).to.equal(true)
+        expect(vcStatus?.status).to.equal('OK')
+    })
+})
+
+describe("Test cases for VC with empty revocation list",()=>{
+    it("Check if a valid verifiable credential is verified", async ()=>{
+        const vcStatus = await verifyCredential(did, VC,[]);
+        expect(vcStatus?.status).to.equal('OK')
+    })
+})
+
+describe("Test cases for verify a VC, which is in revocation list",()=>{
+    it("Check if a valid verifiable credential is verified", async ()=>{
+        const vcStatus = await verifyCredential(did, VC,revocationList1);
+        expect(vcStatus?.status).to.equal("NOK")
+        expect(vcStatus?.checks[0].revoked).to.equal("NOK");
+    })
+})
+
+
+describe("Test cases for verify a VC, which is not in the revocation list",()=>{
+    it("Check if a valid verifiable credential is verified", async ()=>{
+        const vcStatus = await verifyCredential(did, VC,revocationList2);
+        expect(vcStatus?.status).to.equal("OK")
+        expect(vcStatus?.checks[0].revoked).to.equal("OK");
     })
 })

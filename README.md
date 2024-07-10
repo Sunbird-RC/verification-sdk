@@ -21,8 +21,8 @@ As part of this SDK, two main functionalities exist.
 ```javascript
 import {downloadRevocationList, verifyCredential} from "@sunbird-rc/verification-sdk";
 
-const revocationList = await downloadRevocationList(issuerId, revocation_url);
+const revocationList = await downloadRevocationList(revocation_url, issuerId);
 
-const verificationStatus = await verifyCredential(issuerDid, credential, revocationList);
+const verificationStatus = await verifyCredential(issuerDidDoc, credential, revocationList);
 
 ```
